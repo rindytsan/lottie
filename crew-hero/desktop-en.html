@@ -495,19 +495,28 @@
         var W = 1920, H = 1080;
         var root = document.querySelector('[data-width="' + W + '"]') || document.body.firstElementChild;
         var R = 20;
+        var lastScale = -1, settleTimer = null, shown = false;
+        function reveal() { if (!shown) { shown = true; root.style.visibility = "visible"; } }
         function fit() {
           var s = Math.min(window.innerWidth / W, window.innerHeight / H);
           root.style.transform = "scale(" + s + ")";
           /* root 被 scale(s) 縮放，所以圓角要除以 s 才會是螢幕上真正的 R px */
           if (R) root.style.borderRadius = (R / s) + "px";
-          /* 算完才顯示 —— 否則首次繪製會看到未縮放的原始尺寸閃一下 */
-          root.style.visibility = "visible";
+          /* Wix 載入後才決定 iframe 尺寸，第一次算出來的比例常常是錯的。
+             等比例連續 140ms 沒再變動才顯示，使用者就不會看到中間那個錯誤尺寸。 */
+          if (s !== lastScale) {
+            lastScale = s;
+            if (settleTimer) clearTimeout(settleTimer);
+            settleTimer = setTimeout(reveal, 140);
+          }
         }
         window.addEventListener("resize", fit);
         document.addEventListener("DOMContentLoaded", fit);
         window.addEventListener("load", fit);
-        /* Wix 會在載入後才決定 iframe 尺寸，靠 resize 事件不一定收得到 */
+        /* 靠 resize 事件不一定收得到 iframe 的尺寸變化 */
         if (window.ResizeObserver) { new ResizeObserver(fit).observe(document.documentElement); }
+        /* 保險：尺寸若一直跳動，1.5 秒後無論如何都顯示 */
+        setTimeout(reveal, 1500);
         fit();
         function start() {
           var tl = window.__timelines && window.__timelines["main-en"];
