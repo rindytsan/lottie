@@ -14,7 +14,7 @@
 **新增 → 嵌入程式碼 → 嵌入網站**，填 jsDelivr 網址：
 
 ```
-https://cdn.jsdelivr.net/gh/rindytsan/lottie@main/crew-hero/mobile-zh.html
+https://rindytsan.github.io/lottie/crew-hero/mobile-zh.html
 ```
 
 容器比例要設對，否則會留邊（不會裁切）。
@@ -22,7 +22,7 @@ https://cdn.jsdelivr.net/gh/rindytsan/lottie@main/crew-hero/mobile-zh.html
 不吃外部網址的話，改用「嵌入 HTML 程式碼」：
 
 ```html
-<iframe src="https://cdn.jsdelivr.net/gh/rindytsan/lottie@main/crew-hero/mobile-zh.html"
+<iframe src="https://rindytsan.github.io/lottie/crew-hero/mobile-zh.html"
         style="width:100%;aspect-ratio:1440/1800;border:0"
         loading="lazy"></iframe>
 ```
@@ -48,4 +48,7 @@ node build-standalone.mjs compositions/desktop-en.html desktop-en 1920 1080 main
 ```
 
 最後一個參數是圓角 px。覆蓋本資料夾後 push，**網址不變**，Wix 端不用改。
-jsDelivr 有快取（約 12 小時），要立刻生效就把網址的 `@main` 換成 commit SHA。
+GitHub Pages 建置約 1 分鐘，之後網址就是最新的。
+
+> **不要用 jsDelivr。** 它把 `.html` 當 `text/plain` 送（安全政策），
+> iframe 會把原始碼當純文字印出來，不會渲染。
