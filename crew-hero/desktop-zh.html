@@ -545,8 +545,11 @@
         fit();
         function start() {
           var tl = window.__timelines && window.__timelines["main"];
-          if (!tl) return setTimeout(start, 50);   /* 字型載入後才建時間軸 */
+          if (!tl) return setTimeout(start, 50);
           fit();
+          /* ?poster=秒數:停在該幀不播 —— 給「產靜態海報圖」用 */
+          var pm = location.search.match(/[?&]poster(?:=([0-9.]+))?/);
+          if (pm) { tl.pause(parseFloat(pm[1] || "0")); return; }
           tl.repeat(-1);
           tl.play(0);
           document.addEventListener("visibilitychange", function () {
