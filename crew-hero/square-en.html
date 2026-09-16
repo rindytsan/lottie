@@ -242,10 +242,11 @@
       .me-tagline { top: 40px; font-size: 76px; color: #fff; }
       .me-tagline em { color: #A0F4C3; }
       .me-card { left: 40px; top: 170px; width: 1360px; height: 1230px; border-radius: 40px; background: #fff; }
-      /* 主區以 4:5 版的尺寸排(1134×1447),整塊縮 .85 → 964×1230 剛好填滿卡片右側 */
-      .me-main { left: 396px; width: 1134px; height: 1447px; transform: scale(0.85); transform-origin: 0 0; }
-      .me-thread { width: 1046px; }
-      .me-res, .me-res.me-wide { width: 1046px; }
+      /* 主區以 4:5 版的尺寸排(1205×1538),整塊縮 .8 → 964×1230 剛好填滿卡片右側
+         (.85 時英文版 Adam 的 Social Post 卡會頂到底,Rindy 抓到 → 縮到 .8 多留 90px) */
+      .me-main { left: 396px; width: 1205px; height: 1538px; transform: scale(0.8); transform-origin: 0 0; }
+      .me-thread { width: 1117px; }
+      .me-res, .me-res.me-wide { width: 1117px; }
     </style>
   </head>
   <body>
