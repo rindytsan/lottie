@@ -541,11 +541,17 @@
           var ld = document.getElementById("hfload");
           if (ld) ld.remove();
         }
+        var noFit = /[?&]fit=0(&|$)/.test(location.search), ext = 0;
         function fit() {
-          /* ?fit=0:嵌入方自己把 iframe 固定成 W×H 再縮放(官網首頁 2026-10-30;iOS 在 iframe 裡的 innerWidth / innerHeight 不可靠),這裡不縮、舞台貼左上 */
-          if (/[?&]fit=0(&|$)/.test(location.search)) {
-            document.body.style.display = "block"; root.style.transform = "none"; if (R) root.style.borderRadius = R + "px";
-            if (1 !== lastScale) { lastScale = 1; if (settleTimer) clearTimeout(settleTimer); settleTimer = setTimeout(reveal, 140); }
+          /* ?fit=0:不自己量(iOS 在 iframe 裡的 innerWidth 永遠是 W、會算歪),等嵌入方 postMessage 給縮放比(官網首頁 CardShowcase 2026-10-30)
+             舞台貼左上、整頁剛好 = 舞台縮完的大小,iframe 就是剛好的正方形 */
+          if (noFit) {
+            if (!ext) return;
+            document.documentElement.style.width = document.body.style.width = (W * ext) + "px";
+            document.documentElement.style.height = document.body.style.height = (H * ext) + "px";
+            document.body.style.display = "block";
+            root.style.transformOrigin = "0 0"; root.style.transform = "scale(" + ext + ")"; if (R) root.style.borderRadius = (R / ext) + "px";
+            if (ext !== lastScale) { lastScale = ext; if (settleTimer) clearTimeout(settleTimer); settleTimer = setTimeout(reveal, 140); }
             return;
           }
           var s = Math.min(window.innerWidth / W, window.innerHeight / H);
@@ -567,6 +573,12 @@
         if (window.ResizeObserver) { new ResizeObserver(fit).observe(document.documentElement); }
         /* 保險：尺寸一直跳或圖片載不到，4 秒後無論如何都顯示 */
         setTimeout(function () { shown = true; root.style.visibility = "visible"; }, 4000);
+        if (noFit) {
+          window.addEventListener("message", function (e) { var d = e.data; if (d && d.type === "raccoon-embed-scale" && d.scale > 0) { ext = d.scale; fit(); } });
+          if (window.parent !== window) window.parent.postMessage({ type: "raccoon-embed-ready" }, "*");
+          /* 舊版嵌入方(沒送縮放比)的保險:1.5 秒沒收到就 1:1 顯示 */
+          setTimeout(function () { if (!ext) { ext = 1; fit(); } }, 1500);
+        }
         fit();
         function start() {
           var tl = window.__timelines && window.__timelines["mobile"];
