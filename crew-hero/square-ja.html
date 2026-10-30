@@ -542,6 +542,12 @@
           if (ld) ld.remove();
         }
         function fit() {
+          /* ?fit=0:嵌入方自己把 iframe 固定成 W×H 再縮放(官網首頁 2026-10-30;iOS 在 iframe 裡的 innerWidth / innerHeight 不可靠),這裡不縮、舞台貼左上 */
+          if (/[?&]fit=0(&|$)/.test(location.search)) {
+            document.body.style.display = "block"; root.style.transform = "none"; if (R) root.style.borderRadius = R + "px";
+            if (1 !== lastScale) { lastScale = 1; if (settleTimer) clearTimeout(settleTimer); settleTimer = setTimeout(reveal, 140); }
+            return;
+          }
           var s = Math.min(window.innerWidth / W, window.innerHeight / H);
           root.style.transform = "scale(" + s + ")";
           /* root 被 scale(s) 縮放，所以圓角要除以 s 才會是螢幕上真正的 R px */
